@@ -73,33 +73,9 @@ sudo make
 mon_errors
 
 
-#Configure mavlink router
-echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-echo "Configuration: mavlink data stream on localhost port 5678 TCP"                                                                                             
-if [ ! -d "/etc/mavlink-router" ] 
-then
-    echo "Directory /etc/mavlink-router does not exist. Making it." 
-    sudo mkdir /etc/mavlink-router
-    echo "Made /etc/mavlink-router" 
-fi
-cd /etc/mavlink-router
-sudo chmod 777 main.conf
-echo "Done configuring mavlink-router..."
-mon_errors
-
-
-# download mavlink start scripts
-echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-echo "Now download the autostart scripts for mavlink-router"
-if [ ! -d "/home/ubuntu/startupscripts" ] 
-then
-    echo "Directory /home/ubuntu/startupscripts does not exist yet. Making it." 
-    sudo -u ubuntu mkdir /home/ubuntu/startupscripts
-    echo "Made /home/ubuntu/startupscripts" 
-fi
-cd /home/ubuntu/startupscripts
-sudo chmod 777 /home/ubuntu/startupscripts/start_mavlinkrouter.sh
-sudo chmod 777 /home/ubuntu/startupscripts/autostart_mavlinkrouter.sh
+#Configure autostart mavlink router
+sudo systemctl enable mavlink-router
+sudo systemctl start mavlink-router
 mon_errors
 
 
