@@ -73,7 +73,7 @@ sudo make
 mon_errors
 
 
-#Configure autostart mavlink router
+#Configure autostart mavlink router, add download to auto_mav and start_mav
 sudo systemctl enable mavlink-router
 sudo systemctl start mavlink-router
 mon_errors
