@@ -1,5 +1,15 @@
 #!/bin/bash
 
+<<COMMENT
+List of files to modify
+- autostart_mavlink
+- start_mavlink
+- rc.local
+add: sudo -H -u ubuntu /bin/bash -c '/home/ubuntu/startupscripts/autostart_mavlink.sh
+to force the server to run it at startup
+
+COMMENT
+
 set -x
 
 # checking for errors

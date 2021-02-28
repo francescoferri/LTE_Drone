@@ -1,0 +1,12 @@
+PasswordAuthentication no
+ChallengeResponseAuthentication no
+UsePAM yes
+AllowAgentForwarding yes
+AllowTcpForwarding yes
+GatewayPorts yes
+X11Forwarding yes
+PrintMotd no
+ClientAliveInterval 5
+ClientAliveCountMax 3
+AcceptEnv LANG LC_*
+Subsystem	sftp	/usr/lib/openssh/sftp-server
