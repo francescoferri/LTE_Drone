@@ -3,7 +3,9 @@ This file is used to
 - connect a wifi dongle to a network
 - set up an access point using the PI's onboard wifi interface
 Useful links:
+https://www.raspberrypi.org/forums/viewtopic.php?t=132674
 https://www.electronicshub.org/setup-wifi-raspberry-pi-2-using-usb-dongle/
+extra links:
 https://raspberrypi.stackexchange.com/questions/39227/rpi-as-internet-gateway-bridge/39240#39240
 COMMENT
 
@@ -62,9 +64,14 @@ forwarding(){
     sudo iptables -F
     sudo iptables -t nat -X
     sudo iptables -t nat -F
-    sudo iptables -I INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
-    sudo iptables -I FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
-    sudo iptables -t nat -I POSTROUTING -o eth1 -j MASQUERADE
+    sudo nano /etc/sysctl.conf
+    sudo sh -c "echo 'net.ipv4.ip_forward=1'>/etc/sysctl.conf"
+    read "Insert the name of the dongle interface: " dongle_int
+    sudo iptables -t nat -A POSTROUTING -o ${dongle_int} -j MASQUERADE #adding ip table for forwarding interface
+    sudo sh -c "iptables-save > /etc/iptables.ipv4.nat" #saving configuration to iptab...
+    sudo touch /lib/dhcpcd/dhcpcd-hooks/70-ipv4-nat
+    sudo sh -c "echo 'iptables-restore < /etc/iptables.ipv4.nat'>/etc/sysctl.conf"
+    sudo sh -c "echo 'nameserver 208.67.222.222' > /etc/resolv.conf" #adding a dns server
 }
 
 
