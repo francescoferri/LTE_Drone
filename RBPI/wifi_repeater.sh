@@ -19,19 +19,19 @@ mon_errors() {
 
 
 interfaces(){
-    read "Insert the name of the dongle interface: " dongle_int
-    read "Insert the name of the PI's onboard interface: " onboard_int
+    read -p "Insert the name of the dongle interface: " dongle_int
+    read -p "Insert the name of the PI's onboard interface: " onboard_int
     echo "Editing Interfaces..."
     echo "Appending to /etc/network/interfaces"
     text="
-    auto lo
-    iface lo inet loopback
-    iface ${dongle_int} inet manual
+auto lo
+iface lo inet loopback
+iface ${dongle_int} inet manual
 
-    auto ${onboard_int}
-    allow-hotplug ${onboard_int}
-    iface ${onboard_int} inet manual
-    wpa-roam /etc/wpa_supplicant/wpa_supplicant.conf
+auto ${onboard_int}
+allow-hotplug ${onboard_int}
+iface ${onboard_int} inet manual
+wpa-roam /etc/wpa_supplicant/wpa_supplicant.conf
     "
     sudo sh -c "echo '${text}'>/etc/network/interfaces"
     #sudo chmod 777 /etc/network/interfaces
@@ -39,20 +39,20 @@ interfaces(){
 
 
 wpa_supplicant(){
-    read "Insert the network's SSID: " my_ssid
-    read "Insert the network's PASSWORD: " my_psk
+    read -p "Insert the network's SSID: " my_ssid
+    read -p "Insert the network's PASSWORD: " my_psk
     echo "Editing wpa_supplicant.conf"
     echo "Appending to /etc/wpa_supplicant/wpa_supplicant.conf"
     text="
-    network={
-        ssid=”${my_ssid}”
-        psk=”${my_psk}”
-        proto=RSN
-        key_mgmt=WPA-PSK
-        pairwise=CCMP TKIP
-        group=CCMP TKIP
-        id_str=”${my_ssid}”
-    }
+network={
+    ssid=”${my_ssid}”
+    psk=”${my_psk}”
+    proto=RSN
+    key_mgmt=WPA-PSK
+    pairwise=CCMP TKIP
+    group=CCMP TKIP
+    id_str=”${my_ssid}”
+}
     "
     sudo sh -c "echo '${text}'>/etc/wpa_supplicant/wpa_supplicant.conf"
     #sudo chmod 777 /etc/wpa_supplicant/wpa_supplicant.conf
@@ -64,9 +64,8 @@ forwarding(){
     sudo iptables -F
     sudo iptables -t nat -X
     sudo iptables -t nat -F
-    sudo nano /etc/sysctl.conf
     sudo sh -c "echo 'net.ipv4.ip_forward=1'>/etc/sysctl.conf"
-    read "Insert the name of the dongle interface: " dongle_int
+    read -p "Insert the name of the dongle interface: " dongle_int
     sudo iptables -t nat -A POSTROUTING -o ${dongle_int} -j MASQUERADE #adding ip table for forwarding interface
     sudo sh -c "iptables-save > /etc/iptables.ipv4.nat" #saving configuration to iptab...
     sudo touch /lib/dhcpcd/dhcpcd-hooks/70-ipv4-nat
@@ -96,7 +95,7 @@ wpa_supplicant
 mon_errors
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 echo "Flushing and updating iptables"
-iptables
+forwarding
 mon_errors
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 echo "Installation complete, please reboot your PI. Exiting..."
