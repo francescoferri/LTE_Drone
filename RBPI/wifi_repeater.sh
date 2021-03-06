@@ -37,12 +37,17 @@ get_info() {
 
 prep() {
   #sudo ifconfig eth0 down
+  echo "Updating..."
+  sudo apt-get update -y
+  sudo apt-get upgrade -y
+  mon_errors
+  echo "Done updating."
   echo "Installing hostapd, dnsmasq and bridge-utils"
   sudo apt-get install hostapd -y
   sudo apt-get install dnsmasq -y
   sudo apt-get install bridge-utils -y
   mon_errors
-  echo "Done installing hostapd, dnsmasq and bridge-utils"
+  echo "Done installing hostapd, dnsmasq and bridge-utils."
   echo "Stopping hostapd and dnsmasq for installation..."
   sudo systemctl stop hostapd
   sudo systemctl stop dnsmasq
@@ -144,13 +149,13 @@ update_config=1
 country=CA
 
 network={
-    ssid=”${my_ssid}”
-    psk=”${my_pw}”
+    ssid=”${net_ssid}”
+    psk=”${net_pws}”
     proto=RSN
     key_mgmt=WPA-PSK
     pairwise=CCMP TKIP
     group=CCMP TKIP
-    id_str=”${my_ssid}”
+    id_str=”${net_ssid}”
 }
     "
     sudo sh -c "echo '${text}'>/etc/wpa_supplicant/wpa_supplicant.conf"
@@ -163,12 +168,12 @@ forwarding(){
     sudo iptables -F
     sudo iptables -t nat -X
     sudo iptables -t nat -F
-    sudo sh -c "echo 'net.ipv4.ip_forward=1'>/etc/sysctl.conf"
+    sudo sh -c "echo 'net.ipv4.ip_forward=1'>>/etc/sysctl.conf"
     sudo iptables -t nat -A POSTROUTING -o ${net_int} -j MASQUERADE #adding ip table for forwarding interface
     sudo sh -c "iptables-save > /etc/iptables.ipv4.nat" #saving configuration to iptab...
     sudo touch /lib/dhcpcd/dhcpcd-hooks/70-ipv4-nat
-    sudo sh -c "echo 'iptables-restore < /etc/iptables.ipv4.nat'>/etc/sysctl.conf"
-    sudo sh -c "echo 'nameserver 208.67.222.222' > /etc/resolv.conf" #adding a dns server
+    sudo sh -c "echo 'iptables-restore < /etc/iptables.ipv4.nat'>>/etc/sysctl.conf"
+    sudo sh -c "echo 'nameserver 208.67.222.222'>>/etc/resolv.conf" #adding a dns server
 }
 
 
