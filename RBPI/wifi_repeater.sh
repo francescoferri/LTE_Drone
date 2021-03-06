@@ -117,8 +117,7 @@ DAEMON_CONF=\"/etc/hostapd/hostapd.conf\"
 
 
 interfaces(){ 
-    echo "Editing Interfaces..."
-    echo "Appending to /etc/network/interfaces"
+    echo "Editing /etc/network/interfaces"
     text="
 auto lo
 iface lo inet loopback
@@ -131,6 +130,7 @@ wpa-roam /etc/wpa_supplicant/wpa_supplicant.conf
     "
     sudo sh -c "echo '${text}'>/etc/network/interfaces"
     #sudo chmod 777 /etc/network/interfaces
+    echo "Done editing /etc/network/interfaces"
 }
 
 
@@ -164,7 +164,6 @@ forwarding(){
     sudo iptables -t nat -X
     sudo iptables -t nat -F
     sudo sh -c "echo 'net.ipv4.ip_forward=1'>/etc/sysctl.conf"
-    read -p "Insert the name of the dongle interface: " net_int
     sudo iptables -t nat -A POSTROUTING -o ${net_int} -j MASQUERADE #adding ip table for forwarding interface
     sudo sh -c "iptables-save > /etc/iptables.ipv4.nat" #saving configuration to iptab...
     sudo touch /lib/dhcpcd/dhcpcd-hooks/70-ipv4-nat
