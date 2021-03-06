@@ -205,6 +205,19 @@ get_info
 mon_errors
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 echo "Preparing for installation..."
+prep
+mon_errors
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+ehco "Configuring DHCP..."
+dhcp_func
+mon_errors
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+echo "Configuring DNS mask..."
+dnsmasq_func
+mon_errors
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+echo "Configuring hostapd..."
+hostapd_func
 mon_errors
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 echo "Updating interfaces."
@@ -219,4 +232,7 @@ echo "Flushing and updating iptables"
 forwarding
 mon_errors
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+echo "Finishing up now..."
+finish
+mon_errors
 echo "Installation complete, please reboot your PI. Exiting..."
