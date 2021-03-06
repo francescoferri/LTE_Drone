@@ -235,4 +235,6 @@ echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 echo "Finishing up now..."
 finish
 mon_errors
-echo "Installation complete, please reboot your PI. Exiting..."
+echo "Installation complete, please reboot your PI. Rebooting..."
+sudo sleep 10
+sudo reboot now
