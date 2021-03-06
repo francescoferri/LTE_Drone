@@ -44,6 +44,10 @@ wpa_supplicant(){
     echo "Editing wpa_supplicant.conf"
     echo "Appending to /etc/wpa_supplicant/wpa_supplicant.conf"
     text="
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+country=CA
+
 network={
     ssid=”${my_ssid}”
     psk=”${my_psk}”
