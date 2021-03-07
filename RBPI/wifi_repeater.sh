@@ -25,23 +25,23 @@ get_info() {
   
   echo "Let's start with the network connection..."
   read -p "Insert the SSID of the network you want to connect to: " net_ssid
-  read -p "Insert the PASSWORD of the network you want to connect to: " net_pws
+  read -p "Insert the PASSWORD of the network you want to connect to: " net_psk
   read -p "Insert the name of the interface you want to use to connect to the network: " net_int
 
   echo "Now your hotspot connection..."
   read -p "Insert the hotspot's SSID: " my_ssid
-  read -p "Insert the hotspot's PASSWORD: " my_pw
+  read -p "Insert the hotspot's PASSWORD: " my_psk
   read -p "Insert the name of the interface you want to use for your hotspot: " my_int
 }
 
 
 prep() {
   #sudo ifconfig eth0 down
-  echo "Updating..."
-  sudo apt-get update -y
-  sudo apt-get upgrade -y
-  mon_errors
-  echo "Done updating."
+  #echo "Updating..."
+  #sudo apt-get update -y
+  #sudo apt-get upgrade -y
+  #mon_errors
+  #echo "Done updating."
   echo "Installing hostapd, dnsmasq and bridge-utils"
   sudo apt-get install hostapd -y
   sudo apt-get install dnsmasq -y
@@ -63,8 +63,7 @@ interface ${my_int}
 static ip_address=192.168.0.1/24
 nohook wpa_supplicant
 #denyinterfaces ${net_int}
-#denyinterfaces ${my_int}
-  "
+#denyinterfaces ${my_int}"
   sudo sh -c "echo '$text'>>/etc/dhcpcd.conf"
   sudo chmod 777 /etc/dhcpcd.conf
   mon_errors
@@ -78,8 +77,7 @@ dnsmasq_func() {
   sudo mv /etc/dnsmasq.conf /etc/dnsmasq.conf.orig
   text="
 interface=wlan0
-dhcp-range=192.168.0.2,192.168.0.99,255.255.255.0,24h
-  "
+dhcp-range=192.168.0.2,192.168.0.99,255.255.255.0,24h"
   sudo sh -c "echo '$text'>/etc/dnsmasq.conf"
   sudo chmod 777 /etc/dnsmasq.conf
   mon_errors
@@ -104,16 +102,14 @@ wpa_key_mgmt=WPA-PSK
 wpa_pairwise=TKIP
 rsn_pairwise=CCMP
 ssid=${my_ssid}
-wpa_passphrase=${my_pw}
-  "
+wpa_passphrase=${my_psk}"
   sudo sh -c "echo '$text'>/etc/hostapd/hostapd.conf"
   sudo chmod 777 /etc/hostapd/hostapd.conf
   mon_errors
   echo "Done editing /etc/hostapd/hostapd.conf"
   echo "Editing /etc/default/hostapd..."
   text="
-DAEMON_CONF=\"/etc/hostapd/hostapd.conf\"
-  "
+DAEMON_CONF=\"/etc/hostapd/hostapd.conf\""
   sudo sh -c "echo '$text'>/etc/default/hostapd"
   sudo chmod 777 /etc/default/hostapd
   mon_errors
@@ -126,15 +122,13 @@ interfaces(){
     text="
 auto lo
 iface lo inet loopback
-iface ${net_int} inet manual
+iface eth0 inet manual
 
-auto ${my_int}
-allow-hotplug ${my_int}
-iface ${my_int} inet manual
-wpa-roam /etc/wpa_supplicant/wpa_supplicant.conf
-    "
+auto ${net_int}
+allow-hotplug ${net_int}
+iface ${net_int} inet manual
+wpa-roam /etc/wpa_supplicant/wpa_supplicant.conf"
     sudo sh -c "echo '${text}'>/etc/network/interfaces"
-    #sudo chmod 777 /etc/network/interfaces
     echo "Done editing /etc/network/interfaces"
 }
 
@@ -149,31 +143,37 @@ update_config=1
 country=CA
 
 network={
-    ssid=”${net_ssid}”
-    psk=”${net_pws}”
-    proto=RSN
-    key_mgmt=WPA-PSK
-    pairwise=CCMP TKIP
-    group=CCMP TKIP
-    id_str=”${net_ssid}”
-}
-    "
+    ssid="\"$net_ssid\""
+    psk="\"$net_psk\""
+}"
     sudo sh -c "echo '${text}'>/etc/wpa_supplicant/wpa_supplicant.conf"
-    #sudo chmod 777 /etc/wpa_supplicant/wpa_supplicant.conf
 }
 
 
 forwarding(){
+    #forwarding
+    sudo sh -c "echo 'net.ipv4.ip_forward=1'>>/etc/sysctl.conf"
+    #flushing ip tables
     sudo iptables -X
     sudo iptables -F
     sudo iptables -t nat -X
     sudo iptables -t nat -F
-    sudo sh -c "echo 'net.ipv4.ip_forward=1'>>/etc/sysctl.conf"
-    sudo iptables -t nat -A POSTROUTING -o ${net_int} -j MASQUERADE #adding ip table for forwarding interface
-    sudo sh -c "iptables-save > /etc/iptables.ipv4.nat" #saving configuration to iptab...
-    sudo touch /lib/dhcpcd/dhcpcd-hooks/70-ipv4-nat
-    sudo sh -c "echo 'iptables-restore < /etc/iptables.ipv4.nat'>>/etc/sysctl.conf"
-    sudo sh -c "echo 'nameserver 208.67.222.222'>>/etc/resolv.conf" #adding a dns server
+    #sudo iptables -I INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+    #sudo iptables -I FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
+    sudo iptables -t nat -A POSTROUTING -o ${net_int} -j MASQUERADE #adding ip table for forwarding rule
+    sudo iptables -t nat -A POSTROUTING -o ${my_int} -j MASQUERADE
+    sudo sh -c "iptables-save > /etc/iptables.ipv4.nat" #saving configuration to iptables
+    #appending to rc.local
+    text="
+iptables-restore < /etc/iptables.ipv4.nat
+exit 0"
+    # delete exit on last line of /etc/rc.local
+    sudo sed -i '/exit 0/d'  /etc/rc.local
+    # append a to end
+    sudo sh -c "echo '$text'>>/etc/rc.local"
+    sudo chown root:root /etc/rc.local
+    sudo chmod 777 /etc/rc.local
+    sudo sh -c "echo 'nameserver 208.67.222.222'>>/etc/resolv.conf" #adding a dns server for good measure
 }
 
 
@@ -182,7 +182,6 @@ finish() {
   sudo ifconfig ${net_int} up
   mon_errors
   echo "Brought ${net_int} back up..."
-
   echo "Bring hostapd and dnsmasq back up..."
   sudo systemctl unmask hostapd
   sudo systemctl enable hostapd
@@ -240,5 +239,3 @@ echo "Finishing up now..."
 finish
 mon_errors
 echo "Installation complete, please reboot your PI. Rebooting..."
-sudo sleep 10
-sudo reboot now
