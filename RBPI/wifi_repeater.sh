@@ -1,6 +1,6 @@
 #!/bin/bash
 <<COMMENT
-This file is used to
+This file is an installation to
 - connect a wifi dongle to a network
 - set up an access point using the PI's onboard wifi interface
 Useful links:

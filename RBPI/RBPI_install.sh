@@ -9,6 +9,7 @@ mon_errors() {
   fi
 }
 
+
 # begin
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 echo "Access Point Installation"
@@ -19,10 +20,13 @@ then
   exit 1
 fi
 
+
 # getting install paramenters from user
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-read -p "Enter the SSID: " my_ssid
-read -p "Enter the password: " my_pw
+echo "---- Access Point Configuration ----"
+read -p "Enter the wireless interface used for the AP" wls_interface
+read -p "Enter the SSID: " ap_ssid
+read -p "Enter the password: " ap_pass
 
 if [ "${ap_ssid}" ] && [ "${ap_pass}" ]
 then
@@ -33,8 +37,10 @@ else
 fi
 # showing available internet connections
 nmcli device status
-read -p "Enter the modem interface from above: " mod_interface
+echo "---- Internet Access Configuration ----"
+read -p "Enter the name of the modem interface: " mod_interface
 echo "Starting..."
+
 
 # preparing for install
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
@@ -50,41 +56,42 @@ sudo apt-get install hostapd -y
 sudo apt-get install dnsmasq -y
 sudo apt-get install bridge-utils -y
 mon_errors
-echo "Stopping hostapd and dnsmasq down"
+echo "Stopping hostapd and dnsmasq"
 sudo systemctl stop hostapd
 sudo systemctl stop dnsmasq
 mon_errors
+
 
 # Adding DHCP configuration
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 echo "Writing to /etc/dhcpcd.conf ..."
 text="
-interface wlan0
+interface ${wls_interface}
 static ip_address=0.0.0.0/24
-nohook wpa_supplicant
-"
+nohook wpa_supplicant"
 sudo sh -c "echo '${text}'>>/etc/dhcpcd.conf"
 sudo chmod 777 /etc/dhcpcd.conf
 mon_errors
+
 
 # DHCP Range config
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 echo "Configuring dnsmasq"
 echo "Writing to /etc/dnsmasq.conf ..."
 text="
-interface=wlan0
-dhcp-range=192.168.0.2,192.168.0.99,255.255.255.0,24h
-"
+interface=${wls_interface}
+dhcp-range=192.168.0.2,192.168.0.99,255.255.255.0,24h"
 sudo sh -c "echo '${text}'>/etc/dnsmasq.conf"
 sudo chmod 777 /etc/dnsmasq.conf
 mon_errors
+
 
 # WiFi Setup
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 echo "Configuring hostapd"
 echo "Writing to /etc/hostapd/hostapd.conf ..."
 text="
-interface=wlan0
+interface=${wls_interface}
 driver=nl80211
 #bridge=br0
 hw_mode=g
@@ -98,28 +105,27 @@ wpa_key_mgmt=WPA-PSK
 wpa_pairwise=TKIP
 rsn_pairwise=CCMP
 ssid=${ap_ssid}
-wpa_passphrase=${ap_pass}
-"
+wpa_passphrase=${ap_pass}"
 sudo sh -c "echo '${text}'>/etc/hostapd/hostapd.conf"
 sudo chmod 777 /etc/hostapd/hostapd.conf
 mon_errors
 echo "Writing to /etc/default/hostapd..."
 text="
-DAEMON_CONF=\"/etc/hostapd/hostapd.conf\"
-"
+DAEMON_CONF=\"/etc/hostapd/hostapd.conf\""
 sudo sh -c "echo '${text}'>/etc/default/hostapd"
 sudo chmod 777 /etc/default/hostapd
 mon_errors
+
 
 # forwarding traffic from AP to active connection
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 echo "Installing traffic forwarding"
 echo "Appending to /etc/sysctl.conf..."
 text="
-net.ipv4.ip_forward=1
-"
+net.ipv4.ip_forward=1"
 sudo sh -c "echo '${text}'>>/etc/sysctl.conf"
 mon_errors
+
 
 # updating IP tables
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
@@ -129,12 +135,12 @@ sudo sh -c "iptables-save > /etc/iptables.ipv4.nat"
 echo "Appending to /etc/rc.local..."
 text="
 iptables-restore < /etc/iptables.ipv4.nat
-exit 0
-"
+exit 0"
 sudo sed -i '/exit 0/d'  /etc/rc.local
 sudo sh -c "echo '${text}'>>/etc/rc.local"
 sudo chown root:root /etc/rc.local
 sudo chmod 777 /etc/rc.local
+
 
 # Finishing up Installation
 echo "${mod_interface} is up"
