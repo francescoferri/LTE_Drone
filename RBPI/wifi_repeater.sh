@@ -35,6 +35,15 @@ get_info() {
 }
 
 
+if [ "${net_ssid}" ] && [ "${net_psk}"] && [ "${my_ssid}"] && [ "${my_psk}"] && [ "${my_int}"]
+then
+    echo "All variables correctly entered"
+else
+  echo "Empty variables. Exiting..."
+  exit 1
+fi
+
+
 prep() {
   #sudo ifconfig eth0 down
   #echo "Updating..."
