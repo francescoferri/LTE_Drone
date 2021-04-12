@@ -66,7 +66,6 @@ mon_errors
 #asking user for authentication
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 echo "Please, authorize the join request on ZeroTier Web UI..."
-echo "Once authorized press any key to continue: "
 
 #displaying useful information
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
