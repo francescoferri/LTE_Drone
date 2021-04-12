@@ -27,18 +27,18 @@ echo "---- Access Point Configuration ----"
 read -p "Enter the wireless interface used for the AP" wls_interface
 read -p "Enter the SSID: " ap_ssid
 read -p "Enter the password: " ap_pass
+echo "---- Internet Access Configuration ----"
+read -p "Enter the name of the modem interface: " mod_interface
 
-if [ "${ap_ssid}" ] && [ "${ap_pass}" ]
+
+if [ "${ap_ssid}" ] && [ "${ap_pass}" ] && [ "${wls_interface}" ] && [ "${mod_interface}" ]
 then
     echo "All variables correctly entered"
 else
   echo "Empty variables. Exiting..."
   exit 1
 fi
-# showing available internet connections
-nmcli device status
-echo "---- Internet Access Configuration ----"
-read -p "Enter the name of the modem interface: " mod_interface
+
 echo "Starting..."
 
 
