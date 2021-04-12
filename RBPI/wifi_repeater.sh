@@ -29,13 +29,13 @@ get_info() {
   read -p "Insert the name of the interface you want to use to connect to the network: " net_int
 
   echo "Now your hotspot connection..."
-  read -p "Insert the hotspot's SSID: " my_ssid
-  read -p "Insert the hotspot's PASSWORD: " my_psk
-  read -p "Insert the name of the interface you want to use for your hotspot: " my_int
+  read -p "Insert the hotspot's SSID: " ap_ssid
+  read -p "Insert the hotspot's PASSWORD: " ap_psk
+  read -p "Insert the name of the interface you want to use for your hotspot: " ap_int
 }
 
 
-if [ "${net_ssid}" ] && [ "${net_psk}"] && [ "${my_ssid}"] && [ "${my_psk}"] && [ "${my_int}"]
+if [ "${net_ssid}" ] && [ "${net_psk}"] && [ "${ap_ssid}"] && [ "${ap_psk}"] && [ "${ap_int}"]
 then
     echo "All variables correctly entered"
 else
@@ -68,11 +68,11 @@ prep() {
 dhcp_func() {
   echo "Editing /etc/dhcpcd.conf ..."
   text="
-interface ${my_int}
+interface ${ap_int}
 static ip_address=192.168.0.1/24
 nohook wpa_supplicant
 #denyinterfaces ${net_int}
-#denyinterfaces ${my_int}"
+#denyinterfaces ${ap_int}"
   sudo sh -c "echo '$text'>>/etc/dhcpcd.conf"
   sudo chmod 777 /etc/dhcpcd.conf
   mon_errors
@@ -97,7 +97,7 @@ dhcp-range=192.168.0.2,192.168.0.99,255.255.255.0,24h"
 hostapd_func() {
   echo "Editing /etc/hostapd/hostapd.conf ..."
   text="
-interface=${my_int}
+interface=${ap_int}
 driver=nl80211
 #bridge=br0
 hw_mode=g
@@ -110,8 +110,8 @@ wpa=2
 wpa_key_mgmt=WPA-PSK
 wpa_pairwise=TKIP
 rsn_pairwise=CCMP
-ssid=${my_ssid}
-wpa_passphrase=${my_psk}"
+ssid=${ap_ssid}
+wpa_passphrase=${ap_psk}"
   sudo sh -c "echo '$text'>/etc/hostapd/hostapd.conf"
   sudo chmod 777 /etc/hostapd/hostapd.conf
   mon_errors
@@ -170,7 +170,7 @@ forwarding(){
     #sudo iptables -I INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
     #sudo iptables -I FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
     sudo iptables -t nat -A POSTROUTING -o ${net_int} -j MASQUERADE #adding ip table for forwarding rule
-    sudo iptables -t nat -A POSTROUTING -o ${my_int} -j MASQUERADE
+    sudo iptables -t nat -A POSTROUTING -o ${ap_int} -j MASQUERADE
     sudo sh -c "iptables-save > /etc/iptables.ipv4.nat" #saving configuration to iptables
     #appending to rc.local
     text="
