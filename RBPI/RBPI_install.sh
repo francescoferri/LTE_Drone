@@ -30,9 +30,9 @@ read -p "Enter the password: " ap_pass
 
 if [ "${ap_ssid}" ] && [ "${ap_pass}" ]
 then
-    echo "SSID and password entered"
+    echo "All variables correctly entered"
 else
-  echo "Empty SSID or password. Exiting..."
+  echo "Empty variables. Exiting..."
   exit 1
 fi
 # showing available internet connections
@@ -153,4 +153,4 @@ sudo systemctl start hostapd
 sudo systemctl start dnsmasq
 mon_errors
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-echo "Installation is complete."
+echo "Installation is complete. Please reboot..."
