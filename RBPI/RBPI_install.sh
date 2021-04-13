@@ -128,18 +128,25 @@ mon_errors
 
 
 # updating IP tables
-echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-echo "add iptables rule"
-sudo iptables -t nat -A POST -o ${mod_interface} -j MASQ
-sudo sh -c "iptables-save > /etc/iptables.ipv4.nat"
-echo "Appending to /etc/rc.local..."
+#flushing ip tables
+sudo iptables -X
+sudo iptables -F
+sudo iptables -t nat -X
+sudo iptables -t nat -F
+sudo iptables -t nat -A POSTROUTING -o ${wls_interface} -j MASQUERADE #adding ip table for forwarding rule
+sudo iptables -t nat -A POSTROUTING -o ${mod_interface} -j MASQUERADE
+sudo sh -c "iptables-save > /etc/iptables.ipv4.nat" #saving configuration to iptables
+#appending to rc.local
 text="
 iptables-restore < /etc/iptables.ipv4.nat
 exit 0"
+# delete exit on last line of /etc/rc.local
 sudo sed -i '/exit 0/d'  /etc/rc.local
-sudo sh -c "echo '${text}'>>/etc/rc.local"
+# append a to end
+sudo sh -c "echo '$text'>>/etc/rc.local"
 sudo chown root:root /etc/rc.local
 sudo chmod 777 /etc/rc.local
+sudo sh -c "echo 'nameserver 208.67.222.222'>>/etc/resolv.conf" #adding a dns server for good measure
 
 
 # Finishing up Installation
