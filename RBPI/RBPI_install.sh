@@ -24,7 +24,7 @@ fi
 # getting install paramenters from user
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 echo "---- Access Point Configuration ----"
-read -p "Enter the wireless interface used for the AP" wls_interface
+read -p "Enter the wireless interface used for the AP: " wls_interface
 read -p "Enter the SSID: " ap_ssid
 read -p "Enter the password: " ap_pass
 echo "---- Internet Access Configuration ----"

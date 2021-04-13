@@ -39,12 +39,6 @@ echo "Downloading ZeroTier"
 curl -s https://install.zerotier.com | sudo bash
 mon_errors
 
-#check installation
-echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-echo "Installation Status:"
-sudo zerotier-cli status
-mon_errors
-
 #autostart
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 echo "Autostart Setting"
@@ -70,6 +64,7 @@ echo "Initializing connection..."
 sleep 20s
 echo "Connection status: "
 sudo zerotier-cli info
+mon_errors
 
 #displaying useful information
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
