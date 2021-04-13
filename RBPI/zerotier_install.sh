@@ -65,13 +65,17 @@ mon_errors
 
 #asking user for authentication
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-echo "Please, authorize the join request on ZeroTier Web UI..."
+read -p "Please, authorize the join request on ZeroTier Web UI. Press ENTER to continue..." useless
+echo "Initializing connection..."
+sleep 20s
+echo "Connection status: "
+sudo zerotier-cli info
 
 #displaying useful information
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-echo "ifconfig output: "
-ifconfig
-echo " ^^^ The ZeroTier interface should be listed above, and begins with <zt> ^^^"
+echo "This is your ip in the ZeroTier network: "
+sudo zerotier-cli get ${zt_net} ip
+
 #done
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 echo "Installation Complete. Exiting..."
