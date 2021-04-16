@@ -45,13 +45,15 @@ ifconfig
 
 Take note of the onboard WiFi interface (default: wlan0) and the modem's interface (default: eth0 on Pi Zero W).
 
-3. Install ZeroTier by running:
+3. Unplug the modem from the Pi.
+
+4. Install ZeroTier by running:
 
 ```bash
 sudo ~/LTE_Drone/raspberrypi/zerotier_install.sh
 ```
 
-4. Install the Pi's access point by running:
+5. Install the Pi's access point by running:
 
 ```bash
 sudo ~/LTE_Drone/raspberrypi/ap_install.sh
