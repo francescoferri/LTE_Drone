@@ -59,4 +59,4 @@ sudo ~/LTE_Drone/raspberrypi/zerotier_install.sh
 sudo ~/LTE_Drone/raspberrypi/ap_install.sh
 ```
 
-You should now have your installation done. The Pi can either be accessed by connecting to the onboard WiFi, or through the ZeroTier VPN. This setup has a latency that ranges between 150 to 1000 milliseconds. However, I am planning to finish the AWS Ubuntu Server deployment, which will run much faster. Enjoy and safe flying!
+You should now be done. The Pi can either be accessed by connecting to the onboard WiFi, or through the ZeroTier VPN. This setup has a latency that ranges between 150 to 1000 milliseconds. However, I am planning to finish the AWS Ubuntu Server deployment, which will run much faster. Will also add a script to install the serial connection between FC and Pi. Enjoy and safe flying!
