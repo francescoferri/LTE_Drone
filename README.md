@@ -18,10 +18,43 @@ This project connects a Raspberry Pi to the internet using a 4G LTE Modem. The P
 - Latest version of Raspian (project built on Buster)
 - Arduplane already installed on the Flight Controller
 
-### How it works
-
 ## Getting Started
 
-### Downloading The Project
+### Installation
 
-1. Start by cloning this repository
+Prerequisites:
+
+- Ensure your Pi is connected to the internet via ethernet or WiFi.
+- Log into the Pi as user "pi" either with SSH or Desktop GUI.
+- The working folder should be /home/pi
+- Modem is unplugged from the Pi.
+- ZeroTier account, with a network already created and its relative ID ready for input.
+
+1. Start by cloning this repo into the Pi's home folder.
+
+```bash
+cd
+git clone https://github.com/francescoferri/LTE_Drone ~/LTE_Drone
+```
+
+2. Plug your modem into your Pi and run:
+
+```bash
+ifconfig
+```
+
+Take note of the onboard WiFi interface (default: wlan0) and the modem's interface (default: eth0 on Pi Zero W).
+
+3. Install ZeroTier by running:
+
+```bash
+sudo ~/LTE_Drone/raspberrypi/zerotier_install.sh
+```
+
+4. Install the Pi's access point by running:
+
+```bash
+sudo ~/LTE_Drone/raspberrypi/ap_install.sh
+```
+
+You should now have your installation done. The Pi can either be accessed by connecting to the onboard WiFi, or through the ZeroTier VPN. This setup has a latency that ranges between 150 to 1000 milliseconds. However, I am planning to finish the AWS Ubuntu Server deployment, which will run much faster. Enjoy and safe flying!
