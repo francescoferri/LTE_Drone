@@ -90,20 +90,26 @@ FlowControl=true
 
 uart_configure() {
     # editing config.txt
-    if [ (grep -c 'dtoverlay=pi3-disable-bt' /boot/config.txt) >= 1 ]
+    if grep -q dtoverlay=pi3-disable-bt /boot/config.txt; 
     then
+    echo "dtoverlay present"
+    else
 text="
 dtoverlay=pi3-disable-bt
 "
     sudo sh -c "echo '${text}'>>/boot/config.txt"
+    echo "Appended to /boot/config.txt"
     fi
     # enabling default uart port
-    if [ (grep -c 'enable_uart=1' /boot/config.txt) >= 1 ]
+    if grep -q enable_uart=1 /boot/config.txt; 
     then
+    echo "enable_uart=1 present"
+    else
 text="
 enable_uart=1
 "
     sudo sh -c "echo '${text}'>>/boot/config.txt"
+    echo "Appended to /boot/config.txt"
     fi
 }
 
