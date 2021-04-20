@@ -57,7 +57,7 @@ mavlink_download(){
     cd mavlink-router
     sudo git submodule update --init --recursive
     #Make and Compile
-    #sudo ./autogen.sh && sudo ./configure CFLAGS='-g -O2' --sysconfdir=/etc --localstatedir=/var --libdir=/usr/lib64 --prefix=/usr
+    sudo ./autogen.sh && sudo ./configure CFLAGS='-g -O2' --sysconfdir=/etc --localstatedir=/var --libdir=/usr/lib64 --prefix=/usr
     sudo make
 }
 
