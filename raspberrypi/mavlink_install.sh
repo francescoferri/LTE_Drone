@@ -113,6 +113,12 @@ enable_uart=1
     fi
 }
 
+create_scripts(){
+    sudo mkdir /home/pi/LTE_Drone/raspberrypi/scripts
+    cd /home/pi/LTE_Drone/raspberrypi/scripts
+
+}
+
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 echo "---- MAVLink Installation ----"
 echo "Installing packages..."
@@ -134,3 +140,14 @@ echo "Configuring UART port ttyS0..."
 uart_configure
 mon_errors
 echo "Done Configuring UART port..."
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+echo "Creating autostart scripts in ~/LTE_Drone/raspberrypi/scripts..."
+if [ ! -d "/home/pi/LTE_Drone/raspberrypi/scripts" ] 
+then
+    create_scripts
+    echo "Scripts crated..."
+else
+    echo "Scripts already existing, continuing..."
+fi
+mon_errors
+
