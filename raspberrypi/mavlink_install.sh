@@ -1,5 +1,7 @@
 #!/bin/bash
-
+<<COMMENT
+Useful Link: https://www.instructables.com/Raspberry-PI-3-Enable-Serial-Communications-to-Tty/
+COMMENT
 
 mon_errors() {
   if ! [ $? = 0 ]
@@ -89,17 +91,9 @@ FlowControl=true"
 
 uart_configure() {
 
-    # editing config.txt
-    if grep -q dtoverlay=pi3-disable-bt /boot/config.txt; 
-    then
-    echo "dtoverlay present"
-    else
-    text="
-dtoverlay=pi3-disable-bt"
-    sudo sh -c "echo '${text}'>>/boot/config.txt"
-    echo "Appended to /boot/config.txt"
-    fi
-
+    #deleting default console on ttyAMA0
+    sudo sed -i '/console=serial0,115200/d'  /boot/config.txt
+    
     # enabling default uart port
     if grep -q enable_uart=1 /boot/config.txt; 
     then
@@ -107,6 +101,17 @@ dtoverlay=pi3-disable-bt"
     else
     text="
 enable_uart=1"
+    sudo sh -c "echo '${text}'>>/boot/config.txt"
+    echo "Appended to /boot/config.txt"
+    fi
+
+    # editing bluetooth config
+    if grep -q dtoverlay=disable-bt /boot/config.txt; 
+    then
+    echo "dtoverlay present"
+    else
+    text="
+dtoverlay=disable-bt"
     sudo sh -c "echo '${text}'>>/boot/config.txt"
     echo "Appended to /boot/config.txt"
     fi
@@ -160,3 +165,5 @@ echo "Configuring rc.local for autostart on boot..."
 rc_local
 mon_errors
 echo "Done Configuring rc.local..."
+
+echo "Done. Please reboot your pi"
