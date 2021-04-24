@@ -113,10 +113,28 @@ enable_uart=1
     fi
 }
 
-create_scripts(){
-    sudo mkdir /home/pi/LTE_Drone/raspberrypi/scripts
-    cd /home/pi/LTE_Drone/raspberrypi/scripts
-
+rc_local(){
+    # checking if rc.local has already been edited
+    if grep -q "sudo -H -u pi /bin/bash -c /home/pi/LTE_Drone/raspberrypi/start_uav_services.sh" /etc/rc.local;
+    then
+    echo "rc.local already been edited. Continuing..."
+    else
+    # first remove the "exit 0" line
+    sudo sed -i '/exit 0/d'  /etc/rc.local
+    # append to rc.local
+text='
+printf "---- Starting UAV services ---- \n"
+sudo -H -u pi /bin/bash -c /home/pi/LTE_Drone/raspberrypi/start_uav_services.sh #starts ssh and mavlink
+dhcpcd -n # Notifies dhcpcd to reload its configuration at active interface
+printf "---- Done starting UAV services ---- \n"
+exit 0
+'
+    sudo sh -c "echo '${text}'>>/etc/rc.local"
+    echo "Appended to /etc/rc.local"
+    fi
+    #permissions
+    sudo chown root:root /etc/rc.local
+    sudo chmod 777 /etc/rc.local
 }
 
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
@@ -141,13 +159,7 @@ uart_configure
 mon_errors
 echo "Done Configuring UART port..."
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-echo "Creating autostart scripts in ~/LTE_Drone/raspberrypi/scripts..."
-if [ ! -d "/home/pi/LTE_Drone/raspberrypi/scripts" ] 
-then
-    create_scripts
-    echo "Scripts crated..."
-else
-    echo "Scripts already existing, continuing..."
-fi
+echo "Configuring rc.local for autostart on boot..."
+rc_local
 mon_errors
-
+echo "Done Configuring rc.local..."

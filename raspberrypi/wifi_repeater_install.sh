@@ -175,7 +175,8 @@ forwarding(){
     #appending to rc.local
     text="
 iptables-restore < /etc/iptables.ipv4.nat
-exit 0"
+exit 0
+"
     # delete exit on last line of /etc/rc.local
     sudo sed -i '/exit 0/d'  /etc/rc.local
     # append a to end
