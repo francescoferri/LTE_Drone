@@ -65,13 +65,13 @@ mavlink_configure() {
     if [ ! -d "/etc/mavlink-router" ] 
     then
         sudo mkdir /etc/mavlink-router
-        sudo touch etc/mavlink-router/main.conf
+        sudo touch /etc/mavlink-router/main.conf
     fi
 
     cd /etc/mavlink-router
 text="
-[General]
 # Mavlink-router serves on this TCP port
+[General]
 TcpServerPort=5790
 ReportStats=false
 MavlinkDialect=auto
@@ -79,11 +79,12 @@ FlowControl=true
 
 # Raspberry Pi to Flight Controller connection
 [UartEndpoint bravo]
-Device = /dev/ttyS0
+Device = /dev/ttyAMA0
 Baud = 921600,500000,115200,57600,38400,19200,9600
 FlowControl=true"
     sudo sh -c "echo '${text}'>/etc/mavlink-router/main.conf"
     sudo chmod 777 main.conf
+    echo "Wrote to /etc/mavlink-router/main.conf"
 }
 
 uart_configure() {
@@ -120,11 +121,10 @@ rc_local(){
     # first remove the "exit 0" line
     sudo sed -i '/exit 0/d'  /etc/rc.local
     # append to rc.local
-text='
-printf "---- Starting UAV services ---- \n"
+text='printf "---- Starting UAV services ---- \\n"
 sudo -H -u pi /bin/bash -c /home/pi/LTE_Drone/raspberrypi/start_uav_services.sh #starts ssh and mavlink
 dhcpcd -n # Notifies dhcpcd to reload its configuration at active interface
-printf "---- Done starting UAV services ---- \n"
+printf "---- Done starting UAV services ---- \\n"
 exit 0'
     sudo sh -c "echo '${text}'>>/etc/rc.local"
     echo "Appended to /etc/rc.local"
