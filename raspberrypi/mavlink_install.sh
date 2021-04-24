@@ -17,7 +17,6 @@ prep() {
     sudo apt-get -y install libxml2-dev
     sudo apt-get -y install libxslt-dev
     sudo apt-get -y install python
-    sudo apt-get -y install python-wxgtk2.8
     sudo apt-get -y install python-matplotlib
     sudo apt-get -y install python3
     sudo apt-get -y install python3-matplotlib
@@ -82,32 +81,31 @@ FlowControl=true
 [UartEndpoint bravo]
 Device = /dev/ttyS0
 Baud = 921600,500000,115200,57600,38400,19200,9600
-FlowControl=true
-"
+FlowControl=true"
     sudo sh -c "echo '${text}'>/etc/mavlink-router/main.conf"
     sudo chmod 777 main.conf
 }
 
 uart_configure() {
+
     # editing config.txt
     if grep -q dtoverlay=pi3-disable-bt /boot/config.txt; 
     then
     echo "dtoverlay present"
     else
-text="
-dtoverlay=pi3-disable-bt
-"
+    text="
+dtoverlay=pi3-disable-bt"
     sudo sh -c "echo '${text}'>>/boot/config.txt"
     echo "Appended to /boot/config.txt"
     fi
+
     # enabling default uart port
     if grep -q enable_uart=1 /boot/config.txt; 
     then
     echo "enable_uart=1 present"
     else
-text="
-enable_uart=1
-"
+    text="
+enable_uart=1"
     sudo sh -c "echo '${text}'>>/boot/config.txt"
     echo "Appended to /boot/config.txt"
     fi
@@ -127,8 +125,7 @@ printf "---- Starting UAV services ---- \n"
 sudo -H -u pi /bin/bash -c /home/pi/LTE_Drone/raspberrypi/start_uav_services.sh #starts ssh and mavlink
 dhcpcd -n # Notifies dhcpcd to reload its configuration at active interface
 printf "---- Done starting UAV services ---- \n"
-exit 0
-'
+exit 0'
     sudo sh -c "echo '${text}'>>/etc/rc.local"
     echo "Appended to /etc/rc.local"
     fi
