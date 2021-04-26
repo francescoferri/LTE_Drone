@@ -11,6 +11,22 @@ mon_errors() {
   fi
 }
 
+# begin
+begin(){
+    # asking for user confirmation
+    read -p "To begin with the installation type in 'yes': " out
+    if ! [ "$out" = "yes" ]
+    then
+        echo "Exiting..."
+        exit 1
+    fi
+    # checking if ssh keys are present
+    if ! test -f /home/pi/LTE_Drone/raspberrypi/*.pem
+    then
+        echo "SSH key absent in ~/LTE_Drone/raspberrypi/!!! Exiting..."
+    fi
+}
+
 prep() {
     sudo apt-get -y update
     sudo apt-get -y upgrade
@@ -139,8 +155,15 @@ exit 0'
     sudo chmod 777 /etc/rc.local
 }
 
+configure_autostart(){
+    sed
+}
+
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 echo "---- MAVLink Installation ----"
+begin
+mon_errors
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 echo "Installing packages..."
 prep
 mon_errors
