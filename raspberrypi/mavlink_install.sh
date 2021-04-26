@@ -25,6 +25,16 @@ begin(){
     then
         echo "SSH key absent in ~/LTE_Drone/raspberrypi/!!! Exiting..."
     fi
+    # Ground Station ip and user request
+    read -p "Insert the ground station's IP addres in the ZeroTier network: " gs_ip
+    read -p "Insert the ground station's username: " gs_user
+    if [ "${gs_ip}" ] && [ "${gs_user}" ]
+    then
+        echo "IP and user correctly entered"
+    else
+    echo "Empty variables. Exiting..."
+    exit 1
+    fi
 }
 
 prep() {
@@ -155,8 +165,10 @@ exit 0'
     sudo chmod 777 /etc/rc.local
 }
 
-configure_autostart(){
-    sed
+configure_groundstation(){
+    sed -i "s/GSIP/$gs_ip/g" /home/pi/LTE_Drone/raspberrypi/start_uav_services.sh
+    sed -i "s/GSUSER/$gs_user/g" /home/pi/LTE_Drone/raspberrypi/start_uav_services.sh
+
 }
 
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
@@ -188,5 +200,9 @@ echo "Configuring rc.local for autostart on boot..."
 rc_local
 mon_errors
 echo "Done Configuring rc.local..."
-
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+echo "Configuring the ground station IP..."
+configure_groundstation
+mon_errors
+echo "Done Configuring IP..."
 echo "Done. Please reboot your pi"
