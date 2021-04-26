@@ -205,4 +205,5 @@ echo "Configuring the ground station IP..."
 configure_groundstation
 mon_errors
 echo "Done Configuring IP..."
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 echo "Done. Please reboot your pi"
