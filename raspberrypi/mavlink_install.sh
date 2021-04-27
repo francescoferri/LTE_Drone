@@ -37,7 +37,7 @@ begin(){
     fi
 }
 
-prep() {
+install_pkg() {
     sudo apt-get -y update
     sudo apt-get -y upgrade
     sudo apt-get -y install screen
@@ -177,7 +177,7 @@ begin
 mon_errors
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 echo "Installing packages..."
-prep
+install_pkg
 mon_errors
 echo "Done installing packages..."
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
