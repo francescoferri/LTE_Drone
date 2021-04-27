@@ -58,6 +58,13 @@ install_pkg_mavlink_install() {
     sudo pip3 install future
     sudo pip3 install pymavlink
     sudo pip3 install mavproxy
+    #Download MAVLink
+    git clone https://github.com/intel/mavlink-router.git
+    cd mavlink-router
+    sudo git submodule update --init --recursive
+    #Make and Compile
+    sudo ./autogen.sh && sudo ./configure CFLAGS='-g -O2' --sysconfdir=/etc --localstatedir=/var --libdir=/usr/lib64 --prefix=/usr
+    sudo make
 }
 
 install_pkg_zerotier_install() {
